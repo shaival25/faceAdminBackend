@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const { mongoURI } = require("../config/config");
 const User = require("../models/user");
 const Role = require("../models/role");
-const Permission = require("../models/Permission");
+const Permission = require("../models/permission");
 
 // Connect to MongoDB
 mongoose
@@ -17,11 +17,11 @@ const createSuperAdmin = async (username, email, password) => {
     const permissions = await Permission.find();
 
     // Create or find the Super Admin role
-    await Role.findOneAndDelete({ name: "admin" });
+    await Role.findOneAndDelete({ name: "superAdmin" });
     console.log("Old Super Admin role deleted");
 
     let superAdminRole = new Role({
-      name: "admin",
+      name: "superAdmin",
       permissions: permissions.map((p) => p._id),
     });
     await superAdminRole.save();

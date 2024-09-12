@@ -5,10 +5,12 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../config/config");
 const uploadsFolder = path.join(__dirname, "../uploads");
+const redis = require("../config/redisClient");
 module.exports = {
   generateQR: async (req, res) => {
     try {
       const image = req.imageName;
+      const mascot = req.body.mascot;
       const url = config.server_url + `/downloads/${image}`;
       const qrCodeImage = await QRCode.toDataURL(url);
       const filename = crypto.randomBytes(16).toString("hex") + ".png";
@@ -27,8 +29,10 @@ module.exports = {
       let newQR = new generateQR({
         originalImageUrl: image,
         qrImageUrl: filename,
+        mascot,
       });
       await newQR.save();
+      await redis.del("mascot_count");
 
       res.status(201).json({
         qrImageUrl: `${config.server_url}/api/qr-image/${filename}`,

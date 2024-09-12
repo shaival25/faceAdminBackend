@@ -8,7 +8,7 @@ const checkPermission = require("../middleware/permissionMiddleware");
 router.get(
   "/roles",
   authenticate,
-  checkPermission("manage-roles:read"),
+  checkPermission("roles:read"),
   roleController.getRoles
 );
 
@@ -16,7 +16,7 @@ router.get(
 router.post(
   "/roles",
   authenticate,
-  checkPermission("manage-roles:create"),
+  checkPermission("roles:write"),
   roleController.createRole
 );
 
@@ -24,7 +24,7 @@ router.post(
 router.put(
   "/roles/:id",
   authenticate,
-  checkPermission("manage-roles:update"),
+  checkPermission("roles:update"),
   roleController.updateRole
 );
 
@@ -32,15 +32,15 @@ router.put(
 router.delete(
   "/roles/:id",
   authenticate,
-  checkPermission("manage-roles:delete"),
+  checkPermission("roles:delete"),
   roleController.deleteRole
 );
 
 // Get role by ID
 router.get(
   "/roles/:id",
-  // authenticate,
-  // checkPermission("manage-roles:read"),
-  roleController.getRoleById
+  authenticate,
+  checkPermission("roles:read"),
+  roleController.getRoleWithGroupedPermissions
 );
 module.exports = router;

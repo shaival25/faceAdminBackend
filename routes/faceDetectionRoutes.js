@@ -7,17 +7,24 @@ const checkRole = require("../middleware/permissionMiddleware");
 
 // Apply role-based authentication middleware dynamically
 router.post(
-  "/face-detection",
+  "/",
   uploadImage.uploadImage,
   faceDetectionController.createFaceDetection
 );
 router.get(
-  "/face-detection",
+  "/",
   authenticate,
-  checkRole(["manage-faceDetection:read"]),
+  checkRole(["faceDetection:read"]),
   faceDetectionController.getFaceDetections
 );
 
-router.get("/face-detection/view/:filename", faceDetectionController.getImages);
+router.delete(
+  "/",
+  authenticate,
+  checkRole(["faceDetection:delete"]),
+  faceDetectionController.deleteFaceDetection
+);
+
+router.get("/view/:filename/:busId", faceDetectionController.getImages);
 
 module.exports = router;

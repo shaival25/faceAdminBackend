@@ -2,7 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require("../config/config");
-// const redis = require("../config/redisClient");
+const redis = require("../config/redisClient");
 const role = require("../models/role");
 // Register user
 exports.register = async (req, res) => {
@@ -11,12 +11,12 @@ exports.register = async (req, res) => {
   try {
     const userByEmail = await User.findOne({ email });
     if (userByEmail) {
-      return res.status(400).json({ msg: "Email already exists!" });
+      return res.status(409).json({ msg: "Email already exists!" });
     }
 
     const userByUsername = await User.findOne({ username });
     if (userByUsername) {
-      return res.status(400).json({ msg: "Username already exists!" });
+      return res.status(409).json({ msg: "Username already exists!" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
     });
 
     await newUser.save();
-    // await redis.del("users"); // Clear redis for users
+    await redis.del("users"); // Clear redis for users
     res.status(201).json(newUser);
   } catch (err) {
     console.error(err.message);
@@ -38,14 +38,15 @@ exports.register = async (req, res) => {
 
 // Login user
 exports.login = async (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).populate("role");
-    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+    const user = await User.findOne({ email, deleted_at: null });
+    if (!user) return res.status(409).json({ msg: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+    if (!isMatch) return res.status(409).json({ msg: "Invalid credentials" });
 
     const permissions = await role
       .findById(user.role._id)
@@ -53,7 +54,13 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ user: { id: user.id } }, jwtSecret, {
       expiresIn: "1h",
     });
-    res.json({ token, user, permissions: permissions.permissions });
+    res.json({
+      token,
+      userName: user.username,
+      email: user.email,
+      id: user._id,
+      permissions: permissions.permissions,
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: err.message });
@@ -63,14 +70,14 @@ exports.login = async (req, res) => {
 // Get all users
 exports.getUsers = async (req, res) => {
   try {
-    // const users = await redis.get("users");
-    // if (users) {
-    // res.status(200).json(JSON.parse(users));
-    // } else {
-    const usersFromDB = await User.find().populate("role");
-    // await redis.set("users", JSON.stringify(usersFromDB), "EX", 3600);
-    res.status(200).json(usersFromDB);
-    // }
+    const users = await redis.get("users");
+    if (users) {
+      res.status(200).json(JSON.parse(users));
+    } else {
+      const usersFromDB = await User.find().populate("role");
+      await redis.set("users", JSON.stringify(usersFromDB), "EX", 3600);
+      res.status(200).json(usersFromDB);
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: err.message });
@@ -89,7 +96,7 @@ exports.deleteUser = async (req, res) => {
     }
 
     const usersFromDB = await User.find().populate("role");
-    // await redis.set("users", JSON.stringify(usersFromDB), "EX", 3600);
+    await redis.set("users", JSON.stringify(usersFromDB), "EX", 3600);
     res.status(200).json(usersFromDB);
   } catch (err) {
     console.error(err.message);
@@ -115,7 +122,7 @@ exports.updateUser = async (req, res) => {
     }
     user.updated_at = Date.now();
     await user.save();
-    // await redis.del("users"); // Clear redis for users
+    await redis.del("users"); // Clear redis for users
     res.status(200).json({ msg: "User updated" });
   } catch (err) {
     console.error(err.message);

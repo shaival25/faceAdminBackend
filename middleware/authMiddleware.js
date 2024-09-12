@@ -12,6 +12,6 @@ module.exports = async (req, res, next) => {
     req.user = await User.findById(decoded.user.id).populate("role");
     next();
   } catch (err) {
-    res.status(401).json({ msg: "Token is not valid" });
+    res.status(400).json({ msg: "Token is not valid" });
   }
 };

@@ -2,17 +2,28 @@ const crypto = require("crypto");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
-// Check if the directory exists, if not create it
-const uploadsFolder = path.join(__dirname, "../uploads/photo-booth-images");
-if (!fs.existsSync(uploadsFolder)) {
-  fs.mkdirSync(uploadsFolder);
-}
+const BusController = require("../controllers/busController");
+const config = require("../config/config");
 
 // Setup storage for images with encrypted filenames
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsFolder);
+  destination: async (req, file, cb) => {
+    try {
+      const busName = await BusController.getBusName(config.macAddress); // Get the bus name dynamically
+      const uploadsFolder = path.join(
+        __dirname,
+        `../uploads/${busName}/photo-booth-images`
+      );
+
+      // Check if the directory exists, if not create it
+      if (!fs.existsSync(uploadsFolder)) {
+        fs.mkdirSync(uploadsFolder, { recursive: true }); // Create folder recursively
+      }
+
+      cb(null, uploadsFolder);
+    } catch (err) {
+      cb(err, null);
+    }
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);

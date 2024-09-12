@@ -8,10 +8,14 @@ const permissionRoutes = require("./routes/permissionRoutes");
 const generateQrRoutes = require("./routes/generateQRRoutes");
 const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const donwloadsRoutes = require("./routes/downloadRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
+const personCounterRoutes = require("./routes/personCounterRoutes");
+const busConfig = require("./controllers/busController");
+
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-// require("./config/redisClient");
+require("./config/redisClient");
 const cors = require("cors");
 
 // Connect to the database
@@ -35,10 +39,14 @@ app.use("/api/users", userRoutes);
 app.use("/api", roleRoutes);
 app.use("/api", permissionRoutes);
 app.use("/api", generateQrRoutes);
-app.use("/api", faceDetectionRoutes);
-const httpsServer = https.createServer(credentials, app);
+app.use("/api/face-detection", faceDetectionRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/person-counter", personCounterRoutes);
 
-// Start server
-httpsServer.listen(config.port, () => {
-  console.log(`Server running on port ${config.port}`);
+const httpsServer = https.createServer(credentials, app);
+busConfig.initialize().then(() => {
+  // Start server
+  httpsServer.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
+  });
 });

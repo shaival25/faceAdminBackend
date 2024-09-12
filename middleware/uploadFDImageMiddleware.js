@@ -1,24 +1,50 @@
-const crypto = require("crypto");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const FaceDetection = require("../models/faceDetection");
+const BusController = require("../controllers/busController");
+const config = require("../config/config");
 
-// Check if the directory exists, if not create it
-const uploadsFolder = path.join(__dirname, "../uploads/face-detection-images");
-if (!fs.existsSync(uploadsFolder)) {
-  fs.mkdirSync(uploadsFolder);
-}
+// Function to get the next counter for image name
+const getCounter = async () => {
+  const faceDetections = await FaceDetection.find();
+  if (!faceDetections) {
+    return 1;
+  }
+  return faceDetections.length + 1;
+};
 
-// Setup storage for images with encrypted filenames
+// Setup storage for images with bus name in folder path and counter-based filenames
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsFolder);
+  destination: async (req, file, cb) => {
+    try {
+      const busName = await BusController.getBusName(config.macAddress); // Get the bus name dynamically
+      const uploadsFolder = path.join(
+        __dirname,
+        `../uploads/${busName}/face-detection-images`
+      );
+
+      // Check if the directory exists, if not create it
+      if (!fs.existsSync(uploadsFolder)) {
+        fs.mkdirSync(uploadsFolder, { recursive: true }); // Create folder recursively
+      }
+
+      cb(null, uploadsFolder);
+    } catch (error) {
+      cb(error, null); // Pass error to multer in case of failure
+    }
   },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = crypto.randomBytes(16).toString("hex") + ext;
-    req.imageName = filename;
-    cb(null, filename);
+  filename: async (req, file, cb) => {
+    try {
+      const counter = await getCounter(); // Get the next counter value
+      const ext = path.extname(file.originalname); // Get the file extension (e.g., .png)
+      const filename = `${counter}${ext}`; // Use the counter as the filename (e.g., 1.png, 2.png)
+
+      req.imageName = filename;
+      cb(null, filename);
+    } catch (error) {
+      cb(error, null); // Pass error in case of failure
+    }
   },
 });
 

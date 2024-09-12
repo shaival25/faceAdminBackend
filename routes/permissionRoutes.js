@@ -7,9 +7,9 @@ const checkPermission = require("../middleware/permissionMiddleware");
 // Get permissions
 router.get(
   "/permissions",
-  authenticate,
-  checkPermission("manage-permissions:read"),
-  permissionController.getPermissions
+  // authenticate,
+  // checkPermission("permissions:read"),
+  permissionController.getPermissionsWithTypes
 );
 
 module.exports = router;
