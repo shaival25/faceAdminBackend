@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
-const generateQrRoutes = require("./routes/generateQRRoutes");
 const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const donwloadsRoutes = require("./routes/downloadRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
@@ -31,14 +30,17 @@ app.use(cors());
 app.use("/downloads", donwloadsRoutes);
 
 // Routes
-app.use("/api", generateQrRoutes);
 app.use("/api/face-detection", faceDetectionRoutes);
 app.use("/api/person-counter", personCounterRoutes);
 
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
   // Start server
-  httpsServer.listen(config.port, () => {
+  // httpsServer.listen(config.port, () => {
+  //   console.log(`Server running on port ${config.port}`);
+  // });
+
+  app.listen(config.port, () => {
     console.log(`Server running on port ${config.port}`);
   });
 });
