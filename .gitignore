@@ -131,3 +131,6 @@ dist
 
 #uploads
 uploads/
+
+#info.json
+info.json

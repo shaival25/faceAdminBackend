@@ -1,14 +1,9 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
-const config = require("./config/config");
-const roleRoutes = require("./routes/roleRoutes");
-const userRoutes = require("./routes/userRoutes");
-const permissionRoutes = require("./routes/permissionRoutes");
 const generateQrRoutes = require("./routes/generateQRRoutes");
 const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const donwloadsRoutes = require("./routes/downloadRoutes");
-const analyticsRoutes = require("./routes/analyticsRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
 const busConfig = require("./controllers/busController");
 
@@ -20,6 +15,7 @@ const cors = require("cors");
 
 // Connect to the database
 connectDB();
+const config = require("./config/config");
 
 const sslKey = fs.readFileSync(path.join(__dirname, "server.key"), "utf8");
 const sslCert = fs.readFileSync(path.join(__dirname, "server.cert"), "utf8");
@@ -35,12 +31,8 @@ app.use(cors());
 app.use("/downloads", donwloadsRoutes);
 
 // Routes
-app.use("/api/users", userRoutes);
-app.use("/api", roleRoutes);
-app.use("/api", permissionRoutes);
 app.use("/api", generateQrRoutes);
 app.use("/api/face-detection", faceDetectionRoutes);
-app.use("/api/analytics", analyticsRoutes);
 app.use("/api/person-counter", personCounterRoutes);
 
 const httpsServer = https.createServer(credentials, app);

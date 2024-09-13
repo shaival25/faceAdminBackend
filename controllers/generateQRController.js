@@ -43,10 +43,16 @@ module.exports = {
   },
 
   getQR: async (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(uploadsFolder + "/qrcodes", filename);
-    const image = fs.readFileSync(filePath);
-    res.writeHead(200, { "Content-Type": "image/png" });
-    res.end(image);
+    try {
+      console.log(req.params);
+      const filename = req.params.filename;
+      const filePath = path.join(uploadsFolder + "/qrcodes", filename);
+      const image = fs.readFileSync(filePath);
+      res.writeHead(200, { "Content-Type": "image/png" });
+      res.end(image);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: err.message });
+    }
   },
 };

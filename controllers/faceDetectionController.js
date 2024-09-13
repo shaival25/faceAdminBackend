@@ -21,6 +21,10 @@ exports.createFaceDetection = async (req, res) => {
     });
 
     await newFaceDetection.save();
+    const infoFile = path.join(__dirname, "../info.json");
+    const data = JSON.parse(fs.readFileSync(infoFile));
+    data[counter] = [name, gender];
+    fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
     await redis.del("full_count");
     res.status(201).json(newFaceDetection);
   } catch (err) {
