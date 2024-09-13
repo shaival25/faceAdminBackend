@@ -44,7 +44,6 @@ module.exports = {
 
   getQR: async (req, res) => {
     try {
-      console.log(req.params);
       const filename = req.params.filename;
       const filePath = path.join(uploadsFolder + "/qrcodes", filename);
       const image = fs.readFileSync(filePath);
