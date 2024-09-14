@@ -32,6 +32,7 @@ app.use("/downloads", donwloadsRoutes);
 // Routes
 app.use("/api/face-detection", faceDetectionRoutes);
 app.use("/api/person-counter", personCounterRoutes);
+app.use("/api/bny", require("./routes/bnyScreenRoutes"));
 
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
