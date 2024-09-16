@@ -3,7 +3,6 @@ const Feedback = require("../models/feedback");
 exports.saveFeedback = async (req, res) => {
   try {
     const feedbacks = req.body;
-    console.log(feedbacks);
     const promises = feedbacks.map((feedback) => {
       const newFeedback = new Feedback({
         question: feedback.question,

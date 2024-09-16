@@ -25,7 +25,6 @@ exports.createFaceDetection = async (req, res) => {
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [name, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
-    await redis.del("full_count");
     res.status(201).json(newFaceDetection);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -77,7 +76,6 @@ exports.deleteFaceDetection = async (req, res) => {
       { _id: { $in: selectedRows } },
       { $set: { deleted_at: Date.now() } }
     );
-    await redis.del("full_count");
     res.status(200).json({ message: "Deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });

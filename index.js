@@ -4,6 +4,7 @@ const connectDB = require("./config/database");
 const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const donwloadsRoutes = require("./routes/downloadRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
+const bnyScreenRoutes = require("./routes/bnyScreenRoutes");
 const busConfig = require("./controllers/busController");
 
 const fs = require("fs");
@@ -32,7 +33,7 @@ app.use("/downloads", donwloadsRoutes);
 // Routes
 app.use("/api/face-detection", faceDetectionRoutes);
 app.use("/api/person-counter", personCounterRoutes);
-app.use("/api/bny", require("./routes/bnyScreenRoutes"));
+app.use("/api/bny", bnyScreenRoutes);
 
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
