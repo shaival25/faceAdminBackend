@@ -19,17 +19,21 @@ const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     try {
       const busName = await BusController.getBusName(config.macAddress); // Get the bus name dynamically
-      const uploadsFolder = path.join(
+      const uploadsFolder1 = path.join(
         __dirname,
         `../uploads/${busName}/face-detection-images`
       );
+      const uploadsFolder2 = path.join("");
 
       // Check if the directory exists, if not create it
-      if (!fs.existsSync(uploadsFolder)) {
-        fs.mkdirSync(uploadsFolder, { recursive: true }); // Create  folder recursively
+      if (!fs.existsSync(uploadsFolder1)) {
+        fs.mkdirSync(uploadsFolder1, { recursive: true }); // Create  folder recursively
+      }
+      if (!fs.existsSync(uploadsFolder2)) {
+        fs.mkdirSync(uploadsFolder2, { recursive: true }); // Create  folder recursively
       }
 
-      cb(null, uploadsFolder);
+      cb(null, uploadsFolder1);
     } catch (error) {
       cb(error, null); // Pass error to multer in case of failure
     }
