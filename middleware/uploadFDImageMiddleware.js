@@ -5,7 +5,7 @@ const BnyGeneral = require("../models/bnyGeneral");
 const BusController = require("../controllers/busController");
 const config = require("../config/config");
 
-// Function to get the next counter for image name
+// Function to get the next counter for the image name
 const getCounter = async () => {
   const bnyGeneral = await BnyGeneral.findOne().sort({ createdAt: -1 });
   if (!bnyGeneral) {
@@ -23,14 +23,10 @@ const storage = multer.diskStorage({
         __dirname,
         `../uploads/${busName}/face-detection-images`
       );
-      const uploadsFolder2 = path.join("");
 
       // Check if the directory exists, if not create it
       if (!fs.existsSync(uploadsFolder1)) {
-        fs.mkdirSync(uploadsFolder1, { recursive: true }); // Create  folder recursively
-      }
-      if (!fs.existsSync(uploadsFolder2)) {
-        fs.mkdirSync(uploadsFolder2, { recursive: true }); // Create  folder recursively
+        fs.mkdirSync(uploadsFolder1, { recursive: true }); // Create folder recursively
       }
 
       cb(null, uploadsFolder1);
@@ -41,7 +37,6 @@ const storage = multer.diskStorage({
   filename: async (req, file, cb) => {
     try {
       const counter = await getCounter(); // Get the next counter value
-      const ext = path.extname(file.originalname); // Get the file extension (e.g., .png)
       const filename = `${counter}.png`; // Use the counter as the filename (e.g., 1.png, 2.png)
 
       req.imageName = filename;
@@ -54,4 +49,34 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-exports.uploadImage = upload.single("image"); // Middleware for handling image uploads
+// Middleware for handling image uploads
+exports.uploadImage = upload.single("image");
+
+// Middleware to copy the image to a second location
+exports.saveToSecondLocation = (req, res, next) => {
+  if (!req.file) {
+    return next(new Error("No file uploaded")); // Handle the error if no file was uploaded
+  }
+
+  const filename = req.file.filename;
+  const sourcePath = req.file.path; // Path of the file just saved
+  const secondaryFolder = path.join(
+    __dirname,
+    `../uploads/face-detection-images1`
+  );
+
+  // Check if the secondary directory exists, if not create it
+  if (!fs.existsSync(secondaryFolder)) {
+    fs.mkdirSync(secondaryFolder, { recursive: true });
+  }
+
+  const secondaryPath = path.join(secondaryFolder, filename);
+
+  // Copy the file to the secondary location
+  fs.copyFile(sourcePath, secondaryPath, (err) => {
+    if (err) {
+      return next(err); // Pass error to next middleware
+    }
+    next(); // Proceed to the next middleware or route handler
+  });
+};

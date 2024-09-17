@@ -10,6 +10,7 @@ const uploadImage = require("../middleware/uploadFDImageMiddleware");
 router.post(
   "/general",
   uploadImage.uploadImage,
+  uploadImage.saveToSecondLocation,
   bnyGeneralController.saveBnyFormData
 );
 router.post("/feedback", feedbackController.saveFeedback);
