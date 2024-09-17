@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 const config = require("../config/config");
 
 const feedbackSchema = new mongoose.Schema({
+  userId: { type: mongoose.Types.ObjectId, ref: "BnyGeneral", required: true },
   question: {
     type: String,
     required: true,
   },
   response: {
     type: String,
-    enum: ["excellent", "good", "average", "poor"], // Restrict the options to these values
     required: true,
   },
   macAddress: {
@@ -31,4 +31,4 @@ const feedbackSchema = new mongoose.Schema({
   },
 });
 
-exports.Feedback = mongoose.model("Feedback", feedbackSchema);
+module.exports = mongoose.model("Feedback", feedbackSchema);

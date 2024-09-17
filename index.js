@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
-const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const donwloadsRoutes = require("./routes/downloadRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
 const bnyScreenRoutes = require("./routes/bnyScreenRoutes");
@@ -31,18 +30,17 @@ app.use(cors());
 app.use("/downloads", donwloadsRoutes);
 
 // Routes
-app.use("/api/face-detection", faceDetectionRoutes);
 app.use("/api/person-counter", personCounterRoutes);
 app.use("/api/bny", bnyScreenRoutes);
 
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
   // Start server
-  // httpsServer.listen(config.port, () => {
-  //   console.log(`Server running on port ${config.port}`);
-  // });
-
-  app.listen(config.port, () => {
+  httpsServer.listen(config.port, () => {
     console.log(`Server running on port ${config.port}`);
   });
+
+  // app.listen(config.port, () => {
+  //   console.log(`Server running on port ${config.port}`);
+  // });
 });

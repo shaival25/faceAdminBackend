@@ -1,17 +1,17 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const FaceDetection = require("../models/faceDetection");
+const BnyGeneral = require("../models/bnyGeneral");
 const BusController = require("../controllers/busController");
 const config = require("../config/config");
 
 // Function to get the next counter for image name
 const getCounter = async () => {
-  const faceDetections = await FaceDetection.find();
-  if (!faceDetections) {
-    return 1;
+  const bnyGeneral = await BnyGeneral.findOne().sort({ createdAt: -1 });
+  if (!bnyGeneral) {
+    return 2;
   }
-  return faceDetections.length + 1;
+  return bnyGeneral.counter + 1;
 };
 
 // Setup storage for images with bus name in folder path and counter-based filenames
@@ -38,7 +38,7 @@ const storage = multer.diskStorage({
     try {
       const counter = await getCounter(); // Get the next counter value
       const ext = path.extname(file.originalname); // Get the file extension (e.g., .png)
-      const filename = `${counter}${ext}`; // Use the counter as the filename (e.g., 1.png, 2.png)
+      const filename = `${counter}.png`; // Use the counter as the filename (e.g., 1.png, 2.png)
 
       req.imageName = filename;
       cb(null, filename);

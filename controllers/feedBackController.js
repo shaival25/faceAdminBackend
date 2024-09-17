@@ -3,16 +3,19 @@ const Feedback = require("../models/feedback");
 exports.saveFeedback = async (req, res) => {
   try {
     const feedbacks = req.body;
-    const promises = feedbacks.map((feedback) => {
+    const results = [];
+
+    Object.keys(feedbacks).forEach((key) => async () => {
       const newFeedback = new Feedback({
-        question: feedback.question,
-        response: feedback.response,
+        question: key,
+        response: feedbacks[key],
       });
-      return newFeedback.save();
+      const savedFeedback = await newFeedback.save();
+      results.push(savedFeedback);
     });
-    const results = await Promise.all(promises);
     res.status(201).json(results);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
