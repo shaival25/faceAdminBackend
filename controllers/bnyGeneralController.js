@@ -1,4 +1,5 @@
 const BnyGeneral = require("../models/bnyGeneral");
+
 const path = require("path");
 const fs = require("fs");
 
@@ -6,7 +7,6 @@ exports.saveBnyFormData = async (req, res) => {
   try {
     const { fullName, email, gender, dob, contactNumber, city, state } = req.body;
     const image = req.imageName;
-    console.log(image);
     const counter = image.split(".")[0];
     const emailUsed = await BnyGeneral.findOne({ email });
 
@@ -42,9 +42,10 @@ exports.saveBnyFormData = async (req, res) => {
 exports.getId = async (req, res) => {
   try {
     const id = req.params.id;
-    const bnyGeneral = await BnyGeneral.findById({ counter: id });
-    res.status(200).json(bnyGeneral._id);
+    const bnyGeneral = await BnyGeneral.findOne({ counter: id });
+    res.status(200).json(bnyGeneral);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
