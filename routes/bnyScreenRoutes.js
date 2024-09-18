@@ -25,4 +25,6 @@ router.get("/mac-address", (req, res) => {
 
 router.get("/cities", bus.getCities);
 
+router.get("/id/:id", bnyGeneralController.getId);
+
 module.exports = router;

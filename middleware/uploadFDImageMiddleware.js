@@ -7,7 +7,7 @@ const config = require("../config/config");
 
 // Function to get the next counter for the image name
 const getCounter = async () => {
-  const bnyGeneral = await BnyGeneral.findOne().sort({ created_at: -1 });
+  const bnyGeneral = await BnyGeneral.findOne().sort({ counter: -1 });
   if (!bnyGeneral) {
     return 2;
   }

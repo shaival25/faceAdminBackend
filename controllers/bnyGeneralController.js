@@ -36,3 +36,13 @@ exports.saveBnyFormData = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getId = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const bnyGeneral = await BnyGeneral.findById({ counter: id });
+    res.status(200).json(bnyGeneral._id);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
