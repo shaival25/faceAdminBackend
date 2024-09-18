@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const syncMiddleware = require("../middleware/syncMiddleware");
 
 const heatMapSchema = new mongoose.Schema({
   heatMap: { type: String, required: true },
@@ -13,5 +14,8 @@ const heatMapSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
 });
+
+heatMapSchema.plugin(syncMiddleware, 'Heatmap');
+
 
 module.exports = mongoose.model("HeatMap", heatMapSchema);

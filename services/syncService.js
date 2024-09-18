@@ -1,29 +1,22 @@
 const { getUnsyncedOperations, markAsSynced } = require('./syncQueue');
-const atlasDB = require('../config/atlasDB'); // Atlas connection
-const { checkInternet } = require('../helpers/internetHelper'); // Import the new internet check function
+const atlasDB = require('../config/atlasDB'); // This contains the Atlas models only
+const { checkInternet } = require('../helpers/internetHelper');
+const mongoose = require('mongoose'); // For ObjectId conversion only
 
 // Function to sync a document to MongoDB Atlas
 async function syncDocumentToAtlas(atlasModel, localDoc) {
     try {
-        await atlasModel.updateOne(
+        if (typeof localDoc._id === 'string') {
+            localDoc._id = mongoose.Types.ObjectId(localDoc._id);
+        }
+        const result = await atlasModel.updateOne(
             { _id: localDoc._id },
             localDoc,
             { upsert: true }
         );
-        console.log(`Synced document with _id: ${localDoc._id} to Atlas.`);
+        console.log(`Synced document with _id: ${localDoc._id} to Atlas. Matched: ${result.matchedCount}, Modified: ${result.modifiedCount}, UpsertedId: ${result.upsertedId}`);
     } catch (error) {
         console.error('Failed to sync document to Atlas:', error);
-        throw error;
-    }
-}
-
-// Function to delete a document from MongoDB Atlas
-async function deleteDocumentFromAtlas(atlasModel, localDoc) {
-    try {
-        await atlasModel.deleteOne({ _id: localDoc._id });
-        console.log(`Deleted document with _id: ${localDoc._id} from Atlas.`);
-    } catch (error) {
-        console.error('Failed to delete document from Atlas:', error);
         throw error;
     }
 }
@@ -37,7 +30,19 @@ async function processSyncQueue() {
         console.log('Started Syncing queued operations to Atlas...');
         for (const queueItem of unsyncedOperations) {
             const { operation, modelName, document, _id } = queueItem;
-            const atlasModel = atlasDB.model(modelName, document.schema);
+
+            let atlasModel;
+            try {
+                // Convert modelName to match Atlas model name format
+                const modelKey = `Atlas${modelName.charAt(0).toUpperCase() + modelName.slice(1)}`;
+                atlasModel = atlasDB[modelKey];
+                if (!atlasModel) {
+                    throw new Error(`Model ${modelKey} not found in Atlas DB.`);
+                }
+            } catch (error) {
+                console.error(`Model ${modelName} not found in Atlas DB.`);
+                continue;
+            }
 
             try {
                 if (operation === 'update') {

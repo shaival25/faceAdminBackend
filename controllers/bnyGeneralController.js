@@ -4,8 +4,7 @@ const fs = require("fs");
 
 exports.saveBnyFormData = async (req, res) => {
   try {
-    const { fullName, email, gender, dob, contactNumber, city, state } =
-      req.body;
+    const { fullName, email, gender, dob, contactNumber, city, state } = req.body;
     const image = req.imageName;
     console.log(image);
     const counter = image.split(".")[0];
@@ -14,6 +13,7 @@ exports.saveBnyFormData = async (req, res) => {
     if (emailUsed) {
       return res.status(400).json({ message: "Email already exists" });
     }
+
     const newBnyGeneral = new BnyGeneral({
       fullName,
       city,
@@ -26,10 +26,12 @@ exports.saveBnyFormData = async (req, res) => {
       contactNumber,
     });
     await newBnyGeneral.save();
+
     const infoFile = path.join(__dirname, "../info.json");
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
+
     res.status(201).json(newBnyGeneral);
   } catch (error) {
     console.log(error);

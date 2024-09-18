@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const syncMiddleware = require("../middleware/syncMiddleware");
 
 const sipCalcSchema = new mongoose.Schema({
   userId: { type: mongoose.Types.ObjectId, ref: "BnyGeneral", required: true },
@@ -16,5 +17,8 @@ const sipCalcSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
 });
+
+sipCalcSchema.plugin(syncMiddleware, 'SipCalc');
+
 
 module.exports = mongoose.model("SipCalc", sipCalcSchema);
