@@ -5,7 +5,8 @@ const fs = require("fs");
 
 exports.saveBnyFormData = async (req, res) => {
   try {
-    const { fullName, email, gender, dob, contactNumber, city, state } = req.body;
+    const { fullName, email, gender, dob, contactNumber, city, state } =
+      req.body;
     const image = req.imageName;
     const counter = image.split(".")[0];
     const emailUsed = await BnyGeneral.findOne({ email });
@@ -26,12 +27,10 @@ exports.saveBnyFormData = async (req, res) => {
       contactNumber,
     });
     await newBnyGeneral.save();
-
     const infoFile = path.join(__dirname, "../info.json");
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
-
     res.status(201).json(newBnyGeneral);
   } catch (error) {
     console.log(error);
@@ -42,7 +41,10 @@ exports.saveBnyFormData = async (req, res) => {
 exports.getId = async (req, res) => {
   try {
     const id = req.params.id;
-    const bnyGeneral = await BnyGeneral.findOne({ counter: id });
+    const bnyGeneral = await BnyGeneral.findOne(
+      { counter: id },
+      { _id: 1, fullName: 1 }
+    );
     res.status(200).json(bnyGeneral);
   } catch (error) {
     console.log(error);
