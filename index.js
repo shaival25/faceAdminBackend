@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const donwloadsRoutes = require("./routes/downloadRoutes");
+const heatMapRoutes = require("./routes/heatMapRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
 const bnyScreenRoutes = require("./routes/bnyScreenRoutes");
 const busConfig = require("./controllers/busController");
@@ -32,6 +33,7 @@ app.use("/downloads", donwloadsRoutes);
 // Routes
 app.use("/api/person-counter", personCounterRoutes);
 app.use("/api/bny", bnyScreenRoutes);
+app.use("/api/heat-map", heatMapRoutes);
 
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
@@ -39,8 +41,4 @@ busConfig.initialize().then(() => {
   httpsServer.listen(config.port, () => {
     console.log(`Server running on port ${config.port}`);
   });
-
-  // app.listen(config.port, () => {
-  //   console.log(`Server running on port ${config.port}`);
-  // });
 });
