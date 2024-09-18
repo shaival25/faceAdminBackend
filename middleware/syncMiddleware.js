@@ -1,13 +1,13 @@
 const { addToQueue } = require("../services/syncQueue");
 
 module.exports = function (schema, atlasModelName) {
-  schema.pre("save", function (doc) {
-    console.log("PRE SAVE CALLED");
-    addToQueue("update", atlasModelName, doc.toObject());
-  });
+    schema.post('save', function (doc) {
+        console.log(`Post-save hook triggered for ${atlasModelName} with document: ${doc._id}`);
+        addToQueue('update', atlasModelName, doc.toObject());
+    });
 
-  schema.pre("remove", function (doc) {
-    console.log("PRE REMOVE CALLED");
-    addToQueue("delete", atlasModelName, doc.toObject());
-  });
+    schema.post('remove', function (doc) {
+        console.log(`Post-remove hook triggered for ${atlasModelName} with document: ${doc._id}`);
+        addToQueue('delete', atlasModelName, doc.toObject());
+    });
 };

@@ -8,5 +8,4 @@ const syncQueueSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     synced_at: { type: Date, default: null },
 });
-
 module.exports = mongoose.model('SyncQueue', syncQueueSchema);

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const syncMiddleware = require("../middleware/syncMiddleware");
 
 const userAnalyticsSchema = new mongoose.Schema({
   userId: { type: mongoose.Types.ObjectId, ref: "BnyGeneral", required: true },
@@ -9,5 +10,7 @@ const userAnalyticsSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
 });
+
+userAnalyticsSchema.plugin(syncMiddleware, 'UserAnalytics');
 
 module.exports = mongoose.model("UserAnalytics", userAnalyticsSchema);

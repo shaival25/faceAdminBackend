@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const syncMiddleware = require("../middleware/syncMiddleware");
 const config = require("../config/config");
 
 const bnyGeneralSchema = new mongoose.Schema({
@@ -24,6 +25,11 @@ const bnyGeneralSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
-});
+},
+  { collection: "bnygenerals" }
+);
+
+// Apply the sync middleware
+bnyGeneralSchema.plugin(syncMiddleware, 'BnyGeneral');
 
 module.exports = mongoose.model("BnyGeneral", bnyGeneralSchema);

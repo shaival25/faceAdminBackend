@@ -13,7 +13,8 @@ async function addToQueue(operation, modelName, document) {
 }
 async function getUnsyncedOperations() {
     return await SyncQueue.find({ synced: false }).sort({ createdAt: 1 }).exec();
-} async function markAsSynced(queueId) {
+}
+async function markAsSynced(queueId) {
     await SyncQueue.findByIdAndUpdate(queueId, { synced: true, synced_at: new Date() });
 }
 

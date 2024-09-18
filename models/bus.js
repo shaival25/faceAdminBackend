@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const syncMiddleware = require("../middleware/syncMiddleware");
+
 
 const BusSchema = new mongoose.Schema({
   busName: { type: String, required: true },
@@ -7,5 +9,8 @@ const BusSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
 });
+
+// Apply the sync middleware
+BusSchema.plugin(syncMiddleware, 'Bus');
 
 module.exports = mongoose.model("Bus", BusSchema);

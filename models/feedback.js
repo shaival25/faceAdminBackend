@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const syncMiddleware = require("../middleware/syncMiddleware");
 
 const feedbackSchema = new mongoose.Schema({
   userId: { type: mongoose.Types.ObjectId, ref: "BnyGeneral", required: true },
@@ -30,5 +31,5 @@ const feedbackSchema = new mongoose.Schema({
   },
 });
 
-module.exports =
-  mongoose.models.Feedback || mongoose.model("Feedback", feedbackSchema);
+feedbackSchema.plugin(syncMiddleware, 'Feedback');
+module.exports = mongoose.model("Feedback", feedbackSchema);

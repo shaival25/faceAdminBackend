@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const syncMiddleware = require("../middleware/syncMiddleware");
 
 const personCounterSchema = new mongoose.Schema({
   counter: { type: Number, required: true },
@@ -7,5 +8,8 @@ const personCounterSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },
 });
+
+personCounterSchema.plugin(syncMiddleware, 'PersonCounter');
+
 
 module.exports = mongoose.model("PersonCounter", personCounterSchema);
