@@ -18,8 +18,8 @@ createInfoFile();
 
 module.exports = {
   port: process.env.PORT || 5000,
-  mongoURI: process.env.MONGO_URI || "mongodb://localhost:27017/faceAdminDB",
-  macAddress: process.env.MAC_ADDRESS || "08-71-90-32-8B-2E",
+  mongoURI: process.env.MONGO_URI,
+  macAddress: process.env.MAC_ADDRESS,
   atlasURI: process.env.ATLAS_URL,
   pingURL: process.env.PING_URL,
   POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,

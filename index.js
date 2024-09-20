@@ -11,7 +11,6 @@ const busConfig = require("./controllers/busController");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-require("./config/redisClient");
 const cors = require("cors");
 
 // Connect to the database
@@ -47,10 +46,10 @@ setInterval(async () => {
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
   // Start server
-  // httpsServer.listen(config.port, () => {
-  //   console.log(`Server running on port ${config.port}`);
-  // });
-  app.listen(config.port, () => {
+  httpsServer.listen(config.port, () => {
     console.log(`Server running on port ${config.port}`);
   });
+  // app.listen(config.port, () => {
+  //   console.log(`Server running on port ${config.port}`);
+  // });
 });

@@ -47,6 +47,7 @@ exports.goalSelected = async (req, res) => {
 exports.endJourney = async (req, res) => {
   try {
     const { userId } = req.params;
+    const { steps } = req.params;
 
     const journeyStarted = await UserAnalytics.findOne(
       { userId },
@@ -56,12 +57,12 @@ exports.endJourney = async (req, res) => {
     const journeyDuration = journeyEnded - journeyStarted.journeyStarted;
     await UserAnalytics.findOneAndUpdate(
       { userId },
-      { journeyEnded, journeyDuration },
+      { journeyEnded, journeyDuration, stepsCompleted: steps },
       { new: true }
     );
     res.status(200).json({ message: "Journey Ended" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };

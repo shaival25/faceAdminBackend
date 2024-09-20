@@ -27,7 +27,7 @@ exports.saveBnyFormData = async (req, res) => {
       contactNumber,
     });
     await newBnyGeneral.save();
-    const infoFile = path.join(__dirname, "../info.json");
+    const infoFile = path.join(__dirname, "../info.json"); // <--- 🚨 change the path
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
