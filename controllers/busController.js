@@ -1,7 +1,7 @@
 const config = require("../config/config");
 const Bus = require("../models/bus");
 const readline = require("readline");
-const { stateCity } = require("../state-city");
+const cities = require("indian-cities-database");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -62,13 +62,9 @@ exports.getBusName = (macAddress) => {
 };
 
 exports.getCities = async (req, res) => {
-  const allCities = await Promise.all(
-    Object.keys(stateCity).map((key) =>
-      stateCity[key].map((city) => ({
-        state: key,
-        city: city.city,
-      }))
-    )
-  ).then((arr) => arr.flat());
-  res.status(200).json(allCities);
+  try {
+    res.status(200).json(cities.cities);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

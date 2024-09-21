@@ -5,6 +5,7 @@ const donwloadsRoutes = require("./routes/downloadRoutes");
 const heatMapRoutes = require("./routes/heatMapRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
 const bnyScreenRoutes = require("./routes/bnyScreenRoutes");
+const userAnalyticsRoutes = require("./routes/userAnalyticsRoutes");
 const busConfig = require("./controllers/busController");
 const { startFileWatcher } = require('./services/uploadsSync'); // Import file watcher service
 
@@ -13,15 +14,13 @@ const { startFileWatcher } = require('./services/uploadsSync'); // Import file w
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-require("./config/redisClient");
 const cors = require("cors");
 
 // Connect to the database
 connectDB();
 const config = require("./config/config");
 
-const { processSyncQueue } = require('./services/syncService');
-
+const { processSyncQueue } = require("./services/syncService");
 
 const sslKey = fs.readFileSync(path.join(__dirname, "server.key"), "utf8");
 const sslCert = fs.readFileSync(path.join(__dirname, "server.cert"), "utf8");
@@ -40,7 +39,7 @@ app.use("/downloads", donwloadsRoutes);
 app.use("/api/person-counter", personCounterRoutes);
 app.use("/api/bny", bnyScreenRoutes);
 app.use("/api/heat-map", heatMapRoutes);
-
+app.use("/api/user-analytics", userAnalyticsRoutes);
 
 // Sync process: Trigger syncing of queued operations periodically
 setInterval(async () => {
@@ -54,4 +53,7 @@ busConfig.initialize().then(() => {
   httpsServer.listen(config.port, () => {
     console.log(`Server running on port ${config.port}`);
   });
+  // app.listen(config.port, () => {
+  //   console.log(`Server running on port ${config.port}`);
+  // });
 });

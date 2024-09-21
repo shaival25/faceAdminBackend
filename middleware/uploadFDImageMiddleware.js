@@ -62,7 +62,7 @@ exports.saveToSecondLocation = (req, res, next) => {
   const sourcePath = req.file.path; // Path of the file just saved
   const secondaryFolder = path.join(
     __dirname,
-    `../uploads/face-detection-images1`
+    `../uploads/face-detection-images1` // <--- 🚨 change the path
   );
 
   // Check if the secondary directory exists, if not create it
