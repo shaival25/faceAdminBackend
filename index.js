@@ -6,6 +6,9 @@ const heatMapRoutes = require("./routes/heatMapRoutes");
 const personCounterRoutes = require("./routes/personCounterRoutes");
 const bnyScreenRoutes = require("./routes/bnyScreenRoutes");
 const busConfig = require("./controllers/busController");
+const { startFileWatcher } = require('./services/uploadsSync'); // Import file watcher service
+
+
 
 const fs = require("fs");
 const path = require("path");
@@ -44,7 +47,7 @@ setInterval(async () => {
   await processSyncQueue();
 }, 60000); // Sync every 60 seconds
 
-
+startFileWatcher();
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
   // Start server

@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-superadmin": "node scripts/createSuperAdmin.js",
     "populate-permissions": "node scripts/populatePermissions.js",
-    "dev": "node index.js"
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
@@ -15,12 +15,14 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "chokidar": "^4.0.0",
     "commander": "^12.1.0",
     "config": "^3.3.12",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "fs-extra": "^11.2.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.0",
