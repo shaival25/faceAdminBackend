@@ -47,6 +47,7 @@ setInterval(async () => {
 }, 60000); // Sync every 60 seconds
 
 startFileWatcher();
+
 const httpsServer = https.createServer(credentials, app);
 busConfig.initialize().then(() => {
   // Start server

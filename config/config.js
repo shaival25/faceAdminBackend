@@ -23,4 +23,5 @@ module.exports = {
   atlasURI: process.env.ATLAS_URL,
   pingURL: process.env.PING_URL,
   POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
+  apiKey: process.env.API_KEY
 };
