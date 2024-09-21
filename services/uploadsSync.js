@@ -7,6 +7,9 @@ const config = require('../config/config');
 require("dotenv").config();
 const https = require('https');
 
+const { checkInternet } = require('../helpers/internetHelper'); // Import the internet helper
+
+
 // Configuration for file watcher and server
 const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
 const SERVER_API = process.env.API_BASE_URL + '/uploads/sync';
@@ -25,8 +28,15 @@ async function uploadFile(filePath, retries = 3, delay = 1000) {
                 throw new Error(`File not found: ${filePath}`);
             }
 
+            const isConnected = await checkInternet();
+            if (!isConnected) {
+                console.log('No internet connection. Retrying in 60 seconds...');
+                await new Promise(res => setTimeout(res, 60000)); // Wait 60 seconds before retrying
+                continue; // Retry the upload attempt
+            }
+
             const fileStream = fs.createReadStream(filePath);
-            const folderPath = path.relative(UPLOADS_DIR, path.dirname(filePath)); // Get the folder path relative to the uploads directory
+            const folderPath = path.relative(UPLOADS_DIR, path.dirname(filePath)) || '';
 
             // Handle file stream errors
             fileStream.on('error', (err) => {
@@ -38,11 +48,12 @@ async function uploadFile(filePath, retries = 3, delay = 1000) {
             formData.append('modifiedAt', new Date().toISOString()); // Include modified date
             formData.append('folderPath', folderPath); // Send the folder path
 
+
             // Send the file to the server with the API secret in headers
             const response = await axios.post(SERVER_API, formData, {
                 headers: {
                     ...formData.getHeaders(),
-                    'x-auth-token': config.apiKey, // API secret
+                    'x-auth-token': config.apiKey,
                 },
                 httpsAgent: httpsAgent, // For self-signed certificates
             });
@@ -65,11 +76,21 @@ async function uploadFile(filePath, retries = 3, delay = 1000) {
 
 // Function to delete a file from the server with retry mechanism
 async function deleteFile(filePath, retries = 3, delay = 1000) {
-    const fileName = path.basename(filePath);
+    const fileName = path.basename(filePath); // Extract filename from path
+    const folderPath = path.relative(UPLOADS_DIR, path.dirname(filePath)); // Get the relative folder path
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const response = await axios.delete(`${SERVER_API}/${fileName}`, {
+            // Check for internet connectivity before deleting
+            const isConnected = await checkInternet();
+            if (!isConnected) {
+                console.log('No internet connection. Retrying in 60 seconds...');
+                await new Promise(res => setTimeout(res, 60000)); // Wait 60 seconds before retrying
+                continue; // Retry the deletion attempt
+            }
+
+            const response = await axios.delete(`${SERVER_API}/delete`, {
+                data: { fileName, folderPath },
                 headers: {
                     'x-auth-token': config.apiKey, // API secret
                 },
@@ -77,7 +98,7 @@ async function deleteFile(filePath, retries = 3, delay = 1000) {
             });
 
             console.log(`File deleted from server: ${filePath} -> Server`, response.data);
-            return; // If successful, exit the function
+            return; // Exit the function if successful
 
         } catch (error) {
             console.error(`Failed to delete file ${filePath} on attempt ${attempt}: ${error.message}`);
