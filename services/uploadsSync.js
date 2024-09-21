@@ -46,8 +46,7 @@ async function uploadFile(filePath, retries = 3, delay = 1000) {
             const formData = new FormData();
             formData.append('file', fileStream, path.basename(filePath));
             formData.append('modifiedAt', new Date().toISOString()); // Include modified date
-            formData.append('folderPath', folderPath); // Send the folder path
-
+            formData.append('folderPath', encodeURIComponent(folderPath)); // Encode folder path
 
             // Send the file to the server with the API secret in headers
             const response = await axios.post(SERVER_API, formData, {
@@ -73,6 +72,7 @@ async function uploadFile(filePath, retries = 3, delay = 1000) {
         }
     }
 }
+
 
 // Function to delete a file from the server with retry mechanism
 async function deleteFile(filePath, retries = 3, delay = 1000) {
