@@ -38,31 +38,28 @@ exports.saveSipCalc = async (req, res) => {
       return res.status(500).json({ message: "User not found" });
     }
 
-    try {
-      const email = user.email;
-      const name = user.fullName;
+    const email = user.email;
+    const name = user.fullName;
 
-      // Send the email using Postmark
-      await client.sendEmail({
-        From: "prince@cactuscreatives.com",
-        To: email,
-        Subject: "Hello from Postmark",
-        HtmlBody: `<strong>Hello ${name}</strong>, welcome to Postmark!`,
-        TextBody: `Hello ${name}, welcome to Postmark!`,
-        MessageStream: "outbound",
-      });
-
+    // Send the email using Postmark
+    const emailResponse = await client.sendEmail({
+      From: "info@bharatniveshyatra.com",
+      To: email,
+      Subject: "Hello from Postmark",
+      HtmlBody: `<strong>Hello ${name}</strong>, welcome to Postmark!`,
+      TextBody: `Hello ${name}, welcome to Postmark!`,
+      MessageStream: "outbound",
+    });
+    if (emailResponse && emailResponse.ErrorCode === 0) {
       // Update user analytics after sending the email
       const userAnalytics = await UserAnalytics.findOne({ userId });
       if (userAnalytics) {
         userAnalytics.emailSent = true;
         await userAnalytics.save();
       }
-
-      // Respond with success
-      res.status(201).json({ message: "Email sent successfully" });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res
+        .status(201)
+        .json({ message: "Email sent successfully", emailResponse });
     }
   } catch (error) {
     console.log(error);
