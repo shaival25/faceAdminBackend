@@ -12,8 +12,8 @@ Steps to clone:
 4. set .env file according to .env.example
 5. get mac address of the system and store in env
 6. set postmark api key
-7. 🚨 change the path of the info.json in bnyGeneralController.js (saveBnyFormData) and set with path of the face detection code
-8. 🚨 change the path in uploadFdImageMiddleware.js (saveToSecondLocation) and set with path of the preprocessed images path of the face detection code
+7. 🚨 set the path of face Reco code and preprocessedImages folder name in config file
+8. 🚨 set node env in env file test/deploy
 9. make sure mongod is installed and is running
 10. install it using npm i pm2 -g
 11. start server with command "pm2 start index.js"

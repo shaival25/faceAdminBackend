@@ -1,7 +1,9 @@
 const BnyGeneral = require("../models/bnyGeneral");
+require("dotenv").config();
 
 const path = require("path");
 const fs = require("fs");
+const config = require("../config/config");
 
 exports.saveBnyFormData = async (req, res) => {
   try {
@@ -27,13 +29,17 @@ exports.saveBnyFormData = async (req, res) => {
       contactNumber,
     });
     await newBnyGeneral.save();
-    const infoFile = path.join(__dirname, "../info.json"); // <--- 🚨 change the path
+    let infoFile;
+    if (process.env.NODE_ENV === "test") {
+      infoFile = path.join(__dirname, "../info.json");
+    } else {
+      infoFile = path.join(config.faceRecoPath, "info.json"); // <--- 🚨 check the path
+    }
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
     res.status(201).json(newBnyGeneral);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -47,7 +53,6 @@ exports.getId = async (req, res) => {
     );
     res.status(200).json(bnyGeneral);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

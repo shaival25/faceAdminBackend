@@ -4,6 +4,7 @@ const fs = require("fs");
 const BnyGeneral = require("../models/bnyGeneral");
 const BusController = require("../controllers/busController");
 const config = require("../config/config");
+require("dotenv").config();
 
 // Function to get the next counter for the image name
 const getCounter = async () => {
@@ -54,29 +55,33 @@ exports.uploadImage = upload.single("image");
 
 // Middleware to copy the image to a second location
 exports.saveToSecondLocation = (req, res, next) => {
-  if (!req.file) {
-    return next(new Error("No file uploaded")); // Handle the error if no file was uploaded
-  }
-
-  const filename = req.file.filename;
-  const sourcePath = req.file.path; // Path of the file just saved
-  const secondaryFolder = path.join(
-    __dirname,
-    `../uploads/face-detection-images1` // <--- 🚨 change the path
-  );
-
-  // Check if the secondary directory exists, if not create it
-  if (!fs.existsSync(secondaryFolder)) {
-    fs.mkdirSync(secondaryFolder, { recursive: true });
-  }
-
-  const secondaryPath = path.join(secondaryFolder, filename);
-
-  // Copy the file to the secondary location
-  fs.copyFile(sourcePath, secondaryPath, (err) => {
-    if (err) {
-      return next(err); // Pass error to next middleware
+  if (process.env.NODE_ENV !== "test") {
+    if (!req.file) {
+      return next(new Error("No file uploaded")); // Handle the error if no file was uploaded
     }
-    next(); // Proceed to the next middleware or route handler
-  });
+
+    const filename = req.file.filename;
+    const sourcePath = req.file.path; // Path of the file just saved
+
+    let secondaryFolder;
+    secondaryFolder = path.join(
+      config.faceRecoPath,
+      config.preProcessedImagesFolderName // <--- 🚨 check the path
+    );
+
+    // Check if the secondary directory exists, if not create it
+    if (!fs.existsSync(secondaryFolder)) {
+      fs.mkdirSync(secondaryFolder, { recursive: true });
+    }
+
+    const secondaryPath = path.join(secondaryFolder, filename);
+
+    // Copy the file to the secondary location
+    fs.copyFile(sourcePath, secondaryPath, (err) => {
+      if (err) {
+        return next(err); // Pass error to next middleware
+      }
+      next(); // Proceed to the next middleware or route handler
+    });
+  }
 };
