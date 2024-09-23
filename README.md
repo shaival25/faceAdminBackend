@@ -15,6 +15,14 @@ Steps to clone:
 7. 🚨 set the path of face Reco code and preprocessedImages folder name in config file
 8. 🚨 set node env in env file test/deploy
 9. make sure mongod is installed and is running
-10. install it using npm i pm2 -g
-11. start server with command "pm2 start index.js"
-12. run command "pm2 save" and "pm2 startup"
+10. after that run following command
+    "sudo systemctl enable mongod"
+    "sudo chown -R mongodb:mongodb /var/lib/mongodb"
+    "sudo chown -R 755 /var/lib/mongod"
+    "sudo rm /var/lib/mongodb/mongod.lock
+    "sudo systemctl daemon-reload"
+    "sudo systemctl start mongod"
+    "sudo systemctl enable mongod"
+11. install it using npm i pm2 -g
+12. start server with command "pm2 start index.js"
+13. run command "pm2 save" and "pm2 startup"
