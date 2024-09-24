@@ -24,6 +24,6 @@ module.exports = {
   pingURL: process.env.PING_URL,
   POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
   apiKey: process.env.API_KEY,
-  faceRecoPath: "/path/to/faceReco/",
-  preProcessedImagesFolderName: "/folder_name",
+  faceRecoPath: "/path/to/faceReco/", // 🚨 --> example --> path.join(__dirname, "..", "..", "/face"),
+  preProcessedImagesFolderName: "/folder_name", //🚨 --> example --> "/preProcessingImages",
 };

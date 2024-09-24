@@ -28,7 +28,6 @@ exports.saveBnyFormData = async (req, res) => {
       dob,
       contactNumber,
     });
-    await newBnyGeneral.save();
     let infoFile;
     if (process.env.NODE_ENV === "test") {
       infoFile = path.join(__dirname, "../info.json");
@@ -38,6 +37,7 @@ exports.saveBnyFormData = async (req, res) => {
     const data = JSON.parse(fs.readFileSync(infoFile));
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
+    await newBnyGeneral.save();
     res.status(201).json(newBnyGeneral);
   } catch (error) {
     res.status(500).json({ message: error.message });
