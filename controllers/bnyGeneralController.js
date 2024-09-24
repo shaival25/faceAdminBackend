@@ -17,6 +17,11 @@ exports.saveBnyFormData = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
+    const contactNumberUsed = await BnyGeneral.findOne({ contactNumber });
+    if (contactNumberUsed) {
+      return res.status(400).json({ message: "Contact Number already exists" });
+    }
+
     const newBnyGeneral = new BnyGeneral({
       fullName,
       city,
