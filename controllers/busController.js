@@ -1,7 +1,7 @@
 const config = require("../config/config");
 const Bus = require("../models/bus");
 const readline = require("readline");
-const cities = require("indian-cities-database");
+const cities = require("../cities.json");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -63,7 +63,7 @@ exports.getBusName = (macAddress) => {
 
 exports.getCities = async (req, res) => {
   try {
-    res.status(200).json(cities.cities);
+    res.status(200).json(cities);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
