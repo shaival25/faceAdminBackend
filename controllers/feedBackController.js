@@ -18,8 +18,10 @@ exports.saveFeedback = async (req, res) => {
       userId,
     });
 
-    const savedFeedback = await newFeedback.save();
-    res.status(201).json(savedFeedback);
+    await newFeedback.save();
+    res.status(200).json({
+      message: "Feedback saved successfully",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
