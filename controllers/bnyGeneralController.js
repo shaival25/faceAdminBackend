@@ -43,10 +43,9 @@ exports.saveBnyFormData = async (req, res) => {
     data[counter] = [fullName, gender];
     fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
     await newBnyGeneral.save();
-    res.status(201).json({
-      message: "Form submitted successfully",
-    });
+    return res.status(200);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: error.message });
   }
 };
