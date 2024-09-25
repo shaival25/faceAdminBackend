@@ -26,8 +26,10 @@ const credentials = { key: sslKey, cert: sslCert };
 
 // Create HTTPS server
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" })); // Increase to 10MB
+
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(cors());
 app.use("/downloads", donwloadsRoutes);
 
@@ -49,7 +51,7 @@ busConfig.initialize().then(() => {
   // Sync process: Trigger syncing of queued operations periodically
   setInterval(async () => {
     await processSyncQueue();
-  }, 10000); // Sync every 60 seconds
+  }, 60000); // Sync every 60 seconds
 
   // app.listen(config.port, () => {
   //   console.log(`Server running on port ${config.port}`);
