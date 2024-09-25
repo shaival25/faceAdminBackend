@@ -27,6 +27,8 @@ Steps to clone:
     "sudo systemctl start mongod"
     "sudo systemctl enable mongod"
 
-11. install it using npm i pm2 -g
-12. start server with command "pm2 start index.js"
-13. run command "pm2 save" and "pm2 startup"
+11. run for the first time using node index.js and add bus name
+12. stop the server
+13. install it using npm i pm2 -g
+14. start server with command "pm2 start index.js"
+15. run command "pm2 save" and "pm2 startup"
