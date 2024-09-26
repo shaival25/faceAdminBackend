@@ -35,6 +35,7 @@ exports.saveSipCalc = async (req, res) => {
       userId,
       monthlyInvestment,
       totalInvestment,
+      goalSelected,
     } = req.body;
 
     // Create and save the new SipCalc entry
@@ -45,6 +46,7 @@ exports.saveSipCalc = async (req, res) => {
       maturityAmount,
       monthlyInvestment,
       totalInvestment,
+      goalSelected,
     });
 
     await newSipCalc.save();
@@ -65,12 +67,13 @@ exports.saveSipCalc = async (req, res) => {
 
     let emailReplacedTemplate = emailTemplate
       .replace("{{name}}", name)
-      .replace("{{monthlyInvestment}}", monthlyInvestment)
       .replace("{{monthlyInvestment}}", formatIndianCurrency(monthlyInvestment))
+      .replace("{{monthlyInvestment}}", monthlyInvestment)
       .replace("{{totalInvestment}}", formatIndianCurrency(totalInvestment))
       .replace("{{expectedROR}}", expectedROR)
       .replace("{{investmentDuration}}", investmentDuration)
-      .replace("{{goalAmount}}", formatIndianCurrency(maturityAmount));
+      .replace("{{goalAmount}}", formatIndianCurrency(maturityAmount))
+      .replace("{{goalSelected}}", goalSelected);
 
     // Send the email using Postmark
     const emailResponse = await client.sendEmail({

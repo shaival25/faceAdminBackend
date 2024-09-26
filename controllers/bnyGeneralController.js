@@ -45,7 +45,6 @@ exports.saveBnyFormData = async (req, res) => {
     await newBnyGeneral.save();
     return res.status(200);
   } catch (error) {
-    console.log(error)
     res.status(500).json({ message: error.message });
   }
 };

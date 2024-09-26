@@ -14,6 +14,7 @@ const sipCalcSchema = new mongoose.Schema(
     maturityAmount: { type: Number, required: true },
     monthlyInvestment: { type: Number, required: true },
     totalInvestment: { type: Number, required: true },
+    goalSelected: { type: String, required: true },
     macAddress: {
       type: String,
       ref: "Bus",
