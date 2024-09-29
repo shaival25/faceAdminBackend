@@ -1,7 +1,7 @@
 const SipCalc = require("../models/sipCalc");
 const postmark = require("postmark");
 const BnyGeneral = require("../models/bnyGeneral");
-const UserAnalytics = require("../models/userAnalytics"); // Make sure to include the UserAnalytics model if it's not already imported
+const UserAnalytics = require("../models/userAnalytics");
 const config = require("../config/config");
 const fs = require("fs");
 const path = require("path");
@@ -26,6 +26,7 @@ const formatIndianCurrency = (amount) => {
     decimalPart ? "." + decimalPart.slice(0, 2) : ""
   }`;
 };
+
 exports.saveSipCalc = async (req, res) => {
   try {
     const {
@@ -51,49 +52,62 @@ exports.saveSipCalc = async (req, res) => {
 
     await newSipCalc.save();
 
-    // Initialize the Postmark client
-    const client = new postmark.ServerClient(config.POSTMARK_API_KEY);
+    // Send a response immediately
+    res.status(200).json({ message: "SIP calculation saved successfully" });
 
-    // Find the user by userId
-    const user = await BnyGeneral.findById(userId);
+    // Send the email in the background
+    setImmediate(async () => {
+      try {
+        // Initialize the Postmark client
+        const client = new postmark.ServerClient(config.POSTMARK_API_KEY);
 
-    // If user is not found
-    if (!user) {
-      return res.status(500).json({ message: "User not found" });
-    }
+        // Find the user by userId
+        const user = await BnyGeneral.findById(userId);
 
-    const email = user.email;
-    const name = user.fullName;
+        // If user is not found, log and exit
+        if (!user) {
+          console.error(`User with ID ${userId} not found.`);
+          return;
+        }
 
-    let emailReplacedTemplate = emailTemplate
-      .replace("{{name}}", name)
-      .replace("{{monthlyInvestment}}", formatIndianCurrency(monthlyInvestment))
-      .replace("{{monthlyInvestment}}", monthlyInvestment)
-      .replace("{{totalInvestment}}", formatIndianCurrency(totalInvestment))
-      .replace("{{expectedROR}}", expectedROR)
-      .replace("{{investmentDuration}}", investmentDuration)
-      .replace("{{goalAmount}}", formatIndianCurrency(maturityAmount))
-      .replace("{{goalSelected}}", goalSelected);
+        const email = user.email;
+        const name = user.fullName;
 
-    // Send the email using Postmark
-    const emailResponse = await client.sendEmail({
-      From: "info@bharatniveshyatra.com",
-      To: email,
-      Subject: "Your Personalized Plan from Bharat Nivesh Yatra awaits!",
-      HtmlBody: emailReplacedTemplate,
-      TextBody: emailReplacedTemplate,
-      MessageStream: "outbound",
-    });
-    if (emailResponse && emailResponse.ErrorCode === 0) {
-      // Update user analytics after sending the email
-      const userAnalytics = await UserAnalytics.findOne({ userId });
-      if (userAnalytics) {
-        userAnalytics.emailSent = true;
-        await userAnalytics.save();
+        let emailReplacedTemplate = emailTemplate
+          .replace("{{name}}", name)
+          .replace(
+            "{{monthlyInvestment}}",
+            formatIndianCurrency(monthlyInvestment)
+          )
+          .replace("{{totalInvestment}}", formatIndianCurrency(totalInvestment))
+          .replace("{{expectedROR}}", expectedROR)
+          .replace("{{investmentDuration}}", investmentDuration)
+          .replace("{{goalAmount}}", formatIndianCurrency(maturityAmount))
+          .replace("{{goalSelected}}", goalSelected);
+
+        // Send the email using Postmark
+        const emailResponse = await client.sendEmail({
+          From: "info@bharatniveshyatra.com",
+          To: email,
+          Subject: "Your Personalized Plan from Bharat Nivesh Yatra awaits!",
+          HtmlBody: emailReplacedTemplate,
+          TextBody: emailReplacedTemplate,
+          MessageStream: "outbound",
+        });
+
+        if (emailResponse && emailResponse.ErrorCode === 0) {
+          // Update user analytics after sending the email
+          const userAnalytics = await UserAnalytics.findOne({ userId });
+          if (userAnalytics) {
+            userAnalytics.emailSent = true;
+            await userAnalytics.save();
+          }
+        }
+      } catch (error) {
+        console.error("Error sending email:", error.message);
       }
-      return res.status(200).json({ message: "Email sent successfully" });
-    }
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
   }
 };
