@@ -63,3 +63,17 @@ exports.getId = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getUser = async (req, res) => {
+  try {
+    const contact = req.params.contact;
+    const bnyGeneral = await BnyGeneral.findOne({ contactNumber: contact });
+    if (!bnyGeneral) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(bnyGeneral);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};

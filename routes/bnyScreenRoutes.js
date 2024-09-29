@@ -13,6 +13,7 @@ router.post(
   uploadImage.saveToSecondLocation,
   bnyGeneralController.saveBnyFormData
 );
+router.get("/user/:contact", bnyGeneralController.getUser);
 router.post("/feedback", feedbackController.saveFeedback);
 router.post("/sip-calc", sipCalcController.saveSipCalc);
 router.get("/mac-address", (req, res) => {
