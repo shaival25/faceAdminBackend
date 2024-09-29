@@ -21,6 +21,7 @@ const storage = multer.diskStorage({
 
       cb(null, uploadsFolder);
     } catch (error) {
+      console.error(error);
       cb(error, null); // Pass error to multer in case of failure
     }
   },
@@ -29,6 +30,7 @@ const storage = multer.diskStorage({
       req.heatMap = file.originalname;
       cb(null, file.originalname);
     } catch (error) {
+      console.error(error);
       cb(error, null); // Pass error in case of failure
     }
   },

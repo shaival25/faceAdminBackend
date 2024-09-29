@@ -21,6 +21,7 @@ exports.startJourney = async (req, res) => {
       res.status(201).json({ message: "Journey Started" });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -40,6 +41,7 @@ exports.goalSelected = async (req, res) => {
       res.status(201).json(newJourney);
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };

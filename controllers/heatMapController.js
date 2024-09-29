@@ -12,6 +12,7 @@ exports.saveHeatMap = async (req, res) => {
     await newHeatMap.save();
     res.status(201).json(newHeatMap);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };

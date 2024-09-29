@@ -32,6 +32,7 @@ const storage = multer.diskStorage({
 
       cb(null, uploadsFolder);
     } catch (error) {
+      console.error(error);
       cb(error, null); // Pass error to multer in case of failure
     }
   },
@@ -43,6 +44,7 @@ const storage = multer.diskStorage({
       req.imageName = filename;
       cb(null, filename);
     } catch (error) {
+      console.error(error);
       cb(error, null); // Pass error in case of failure
     }
   },

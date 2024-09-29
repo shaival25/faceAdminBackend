@@ -19,6 +19,7 @@ router.get("/mac-address", (req, res) => {
   try {
     res.status(200).json({ macAddress: config.macAddress });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
