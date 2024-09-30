@@ -18,6 +18,6 @@ const heatMapSchema = new mongoose.Schema(
   { collection: "heatmaps" }
 );
 
-heatMapSchema.plugin(syncMiddleware, "Heatmap");
+heatMapSchema.plugin(syncMiddleware, "HeatMap");
 
 module.exports = mongoose.model("HeatMap", heatMapSchema);
