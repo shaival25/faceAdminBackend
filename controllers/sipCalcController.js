@@ -22,9 +22,8 @@ const formatIndianCurrency = (amount) => {
     /(\d)(?=(\d\d)+\d$)/g,
     "$1,"
   );
-  return `${formattedIntegerPart}${
-    decimalPart ? "." + decimalPart.slice(0, 2) : ""
-  }`;
+  return `${formattedIntegerPart}${decimalPart ? "." + decimalPart.slice(0, 2) : ""
+    }`;
 };
 
 exports.saveSipCalc = async (req, res) => {
@@ -50,63 +49,20 @@ exports.saveSipCalc = async (req, res) => {
       goalSelected,
     });
 
-    await newSipCalc.save();
-
+    const data = await newSipCalc.save();
+    const journeyStarted = await UserAnalytics.findOne(
+      { userId },
+      { journeyStarted: 1 }
+    );
+    const journeyEnded = new Date();
+    const journeyDuration = journeyEnded - journeyStarted.journeyStarted;
+    await UserAnalytics.findOneAndUpdate(
+      { userId },
+      { journeyEnded, journeyDuration }
+    );
     // Send a response immediately
     res.status(200).json({ message: "SIP calculation saved successfully" });
 
-    // Send the email in the background
-    // setImmediate(async () => {
-    //   try {
-    //     // Initialize the Postmark client
-    //     const client = new postmark.ServerClient(config.POSTMARK_API_KEY);
-
-    //     // Find the user by userId
-    //     const user = await BnyGeneral.findById(userId);
-
-    //     // If user is not found, log and exit
-    //     if (!user) {
-    //       console.error(`User with ID ${userId} not found.`);
-    //       return;
-    //     }
-
-    //     const email = user.email;
-    //     const name = user.fullName;
-
-    //     let emailReplacedTemplate = emailTemplate
-    //       .replace("{{name}}", name)
-    //       .replace(
-    //         "{{monthlyInvestment}}",
-    //         formatIndianCurrency(monthlyInvestment)
-    //       )
-    //       .replace("{{totalInvestment}}", formatIndianCurrency(totalInvestment))
-    //       .replace("{{expectedROR}}", expectedROR)
-    //       .replace("{{investmentDuration}}", investmentDuration)
-    //       .replace("{{goalAmount}}", formatIndianCurrency(maturityAmount))
-    //       .replace("{{goalSelected}}", goalSelected);
-
-    //     // Send the email using Postmark
-    //     const emailResponse = await client.sendEmail({
-    //       From: "info@bharatniveshyatra.com",
-    //       To: email,
-    //       Subject: "Your Personalized Plan from Bharat Nivesh Yatra awaits!",
-    //       HtmlBody: emailReplacedTemplate,
-    //       TextBody: emailReplacedTemplate,
-    //       MessageStream: "outbound",
-    //     });
-
-    //     if (emailResponse && emailResponse.ErrorCode === 0) {
-    //       // Update user analytics after sending the email
-    //       const userAnalytics = await UserAnalytics.findOne({ userId });
-    //       if (userAnalytics) {
-    //         userAnalytics.emailSent = true;
-    //         await userAnalytics.save();
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error("Error sending email:", error.message);
-    //   }
-    // });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });

@@ -11,42 +11,74 @@ exports.saveBnyFormData = async (req, res) => {
       req.body;
     const image = req.imageName;
     const counter = image.split(".")[0];
-    const emailUsed = await BnyGeneral.findOne({ email });
 
-    if (emailUsed) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    const contactNumberUsed = await BnyGeneral.findOne({ contactNumber });
-    if (contactNumberUsed) {
-      return res.status(400).json({ message: "Contact Number already exists" });
-    }
-
-    const newBnyGeneral = new BnyGeneral({
-      fullName,
-      city,
-      state,
-      email,
-      image,
-      gender,
-      counter,
-      dob,
-      contactNumber,
+    // Check if a user with the same email or contactNumber exists
+    let existingUser = await BnyGeneral.findOne({
+      $or: [{ email: email }, { contactNumber: contactNumber }],
     });
-    let infoFile;
-    if (process.env.NODE_ENV === "test") {
-      infoFile = path.join(__dirname, "../info.json");
+
+    if (existingUser) {
+      // Update existing user
+      existingUser.fullName = fullName;
+      existingUser.city = city;
+      existingUser.state = state;
+      existingUser.email = email;
+      existingUser.image = image;
+      existingUser.gender = gender;
+      existingUser.counter = counter;
+      existingUser.dob = dob;
+      existingUser.contactNumber = contactNumber;
+
+      // Save the updated data
+      const updatedData = await existingUser.save();
+
+      // Update info.json file
+      let infoFile;
+      if (process.env.NODE_ENV === "test") {
+        infoFile = path.join(__dirname, "../info.json");
+      } else {
+        infoFile = path.join(config.faceRecoPath, "info.json");
+      }
+      const data = JSON.parse(fs.readFileSync(infoFile));
+      data[counter] = [fullName, gender];
+      fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
+
+      return res.status(200).send(updatedData);
     } else {
-      infoFile = path.join(config.faceRecoPath, "info.json"); // <--- 🚨 check the path
+      // Create a new user
+      const newBnyGeneral = new BnyGeneral({
+        fullName,
+        city,
+        state,
+        email,
+        image,
+        gender,
+        counter,
+        dob,
+        contactNumber,
+      });
+
+      let infoFile;
+      if (process.env.NODE_ENV === "test") {
+        infoFile = path.join(__dirname, "../info.json");
+      } else {
+        infoFile = path.join(config.faceRecoPath, "info.json");
+      }
+      const data = JSON.parse(fs.readFileSync(infoFile));
+      data[counter] = [fullName, gender];
+      fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
+
+      const savedData = await newBnyGeneral.save();
+
+      return res.status(200).send(savedData);
     }
-    const data = JSON.parse(fs.readFileSync(infoFile));
-    data[counter] = [fullName, gender];
-    fs.writeFileSync(infoFile, JSON.stringify(data, null, 2));
-    await newBnyGeneral.save();
-    return res.status(200);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
+    console.error("Error in saveBnyFormData:", error); // More detailed error logging
+    if (!res.headersSent) {
+      return res
+        .status(500)
+        .send("An error occurred while processing your request.");
+    }
   }
 };
 

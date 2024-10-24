@@ -8,7 +8,7 @@ const userAnalyticsSchema = new mongoose.Schema({
   journeyEnded: { type: Date, default: null },
   journeyDuration: { type: Number, default: null },
   goalSelected: { type: String, default: null },
-  stepsCompleted: { type: Number, required: true, default: 0 },
+  stepsCompleted: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
   deleted_at: { type: Date, default: null },

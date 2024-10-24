@@ -85,6 +85,9 @@ exports.saveToSecondLocation = (req, res, next) => {
       }
       next(); // Proceed to the next middleware or route handler
     });
+  } else {
+
+    next();
   }
-  next();
 };
+

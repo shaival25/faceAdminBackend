@@ -4,15 +4,15 @@ const config = require("../config/config");
 
 const bnyGeneralSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    gender: { type: String, required: true },
-    dob: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    contactNumber: { type: Number, required: true, length: 10 },
-    image: { type: String, required: true },
-    counter: { type: Number, required: true },
+    fullName: { type: String },
+    email: { type: String },
+    gender: { type: String },
+    dob: { type: String },
+    city: { type: String },
+    state: { type: String },
+    contactNumber: { type: Number, length: 10 },
+    image: { type: String },
+    counter: { type: Number },
     macAddress: {
       type: String,
       ref: "Bus",

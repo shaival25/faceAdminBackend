@@ -1,4 +1,5 @@
 const Feedback = require("../models/feedback");
+const UserAnalytics = require("../models/userAnalytics");
 
 exports.saveFeedback = async (req, res) => {
   try {
@@ -19,6 +20,16 @@ exports.saveFeedback = async (req, res) => {
     });
 
     await newFeedback.save();
+    const journeyStarted = await UserAnalytics.findOne(
+      { userId },
+      { journeyStarted: 1 }
+    );
+    const journeyEnded = new Date();
+    const journeyDuration = journeyEnded - journeyStarted.journeyStarted;
+    await UserAnalytics.findOneAndUpdate(
+      { userId },
+      { journeyEnded, journeyDuration }
+    );
     res.status(200).json({
       message: "Feedback saved successfully",
     });
