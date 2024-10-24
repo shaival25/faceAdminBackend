@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-superadmin": "node scripts/createSuperAdmin.js",
     "populate-permissions": "node scripts/populatePermissions.js",
-    "dev": "nodemon"
+    "dev": "node index.js"
   },
   "author": "",
   "license": "ISC",
