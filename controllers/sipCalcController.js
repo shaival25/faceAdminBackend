@@ -60,9 +60,7 @@ exports.saveSipCalc = async (req, res) => {
       { userId },
       { journeyEnded, journeyDuration }
     );
-    // Send a response immediately
     res.status(200).json({ message: "SIP calculation saved successfully" });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });

@@ -22,6 +22,13 @@ module.exports = function (schema, atlasModelName) {
     addToQueue("update", atlasModelName, doc.toObject());
   });
 
+  schema.post("updateOne", function (doc) {
+    console.log(
+      `Post-update hook triggered for ${atlasModelName} with document: ${doc._id}`
+    );
+    addToQueue("update", atlasModelName, doc.toObject());
+  });
+
   schema.post("findOneAndUpdate", function (doc) {
     console.log(
       `Post-update hook triggered for ${atlasModelName} with document: ${doc._id}`

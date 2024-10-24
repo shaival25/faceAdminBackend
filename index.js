@@ -42,18 +42,16 @@ app.use("/api/user-analytics", userAnalyticsRoutes);
 startFileWatcher();
 
 const httpsServer = https.createServer(credentials, app);
-busConfig.initialize().then(() => {
-  // Start server
-  httpsServer.listen(config.port, () => {
-    console.log(`Server running on port ${config.port}`);
-  });
-  const { processSyncQueue } = require("./services/syncService");
-  // Sync process: Trigger syncing of queued operations periodically
-  setInterval(async () => {
-    await processSyncQueue();
-  }, 60000); // Sync every 60 seconds
-
-  // app.listen(config.port, () => {
-  //   console.log(`Server running on port ${config.port}`);
-  // });
+// Start server
+httpsServer.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`);
 });
+const { processSyncQueue } = require("./services/syncService");
+// Sync process: Trigger syncing of queued operations periodically
+setInterval(async () => {
+  await processSyncQueue();
+}, 60000); // Sync every 60 seconds
+
+// app.listen(config.port, () => {
+//   console.log(`Server running on port ${config.port}`);
+// });

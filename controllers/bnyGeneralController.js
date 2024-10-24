@@ -4,7 +4,6 @@ require("dotenv").config();
 const path = require("path");
 const fs = require("fs");
 const config = require("../config/config");
-
 exports.saveBnyFormData = async (req, res) => {
   try {
     const { fullName, email, gender, dob, contactNumber, city, state } =
